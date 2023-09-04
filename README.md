@@ -46,6 +46,7 @@ After that you can start it with
 python bot.py
 ```
 
+
 > **Note** You may need to replace `python` with `py`, `python3`, `python3.11`, etc. depending on what Python versions you have installed on the machine.
 
 ## Built With
