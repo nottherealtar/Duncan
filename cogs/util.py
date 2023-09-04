@@ -38,7 +38,7 @@ class util(commands.Cog, name="util"):
         
         embed.add_field(
             name="__**Where's my badge?**__:",
-            value=f"Eligibility for the badge is checked by Discord in intervals, at this moment in time, 24 hours is the recommended time to wait before trying.",
+            value=f"Eligibility for the badge is checked by Discord in intervals, Make sure you are the owner of the bot or in a team with the owner, and have used a slash command within 24 hours, this is the recommended time to wait before trying.",
             inline=False,
         )
 
