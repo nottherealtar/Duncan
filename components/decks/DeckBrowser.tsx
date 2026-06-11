@@ -13,17 +13,11 @@ type Screen = "decks" | "collection";
 
 interface DeckBrowserProps {
   decks: DeckEntry[];
-  pipelineStatus: string;
-  pipelineMessage?: string;
-  lastPipelineRun: string;
   initialTab?: Mode;
 }
 
 export function DeckBrowser({
   decks,
-  pipelineStatus,
-  pipelineMessage,
-  lastPipelineRun,
   initialTab = "browser",
 }: DeckBrowserProps) {
   const [mode, setMode] = useState<Mode>(initialTab);
@@ -229,9 +223,6 @@ export function DeckBrowser({
                 </button>
               )}
 
-              <p className="text-center text-[10px] text-cr-text-muted">
-                {pipelineMessage ?? `Pipeline ${pipelineStatus}`} · {new Date(lastPipelineRun).toLocaleDateString()}
-              </p>
             </>
           )}
 

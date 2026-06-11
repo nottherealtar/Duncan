@@ -10,13 +10,5 @@ export default async function DecksPage({ searchParams }: DecksPageProps) {
   const data = loadDecksData();
   const tab = (params.tab as "browser" | "popular" | "builder" | "import") ?? "browser";
 
-  return (
-    <DeckBrowser
-      decks={data.decks}
-      pipelineStatus={data.pipelineStatus}
-      pipelineMessage={data.pipelineMessage}
-      lastPipelineRun={data.lastPipelineRun}
-      initialTab={tab}
-    />
-  );
+  return <DeckBrowser decks={data.decks} initialTab={tab} />;
 }

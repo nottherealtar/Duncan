@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { fetchBattleLog } from "@/lib/clash-api";
+import { userFacingApiError } from "@/lib/api-errors";
 
 export async function GET(
   _request: Request,
@@ -11,7 +12,6 @@ export async function GET(
     const battles = await fetchBattleLog(decoded);
     return NextResponse.json({ battles });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to fetch battles";
-    return NextResponse.json({ error: message }, { status: 400 });
+    return NextResponse.json({ error: userFacingApiError(error) }, { status: 400 });
   }
 }
