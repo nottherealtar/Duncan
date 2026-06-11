@@ -5,211 +5,304 @@ import type { Card, DeckEntry } from "@/lib/types";
 import { CARDS, getCardsByIds, sortCards } from "@/lib/cards";
 import { parseShareCode, validateDeck } from "@/lib/deck-utils";
 import { DeckGrid } from "./DeckGrid";
+import { ShareCodeBar } from "./ShareCodeBar";
 import { CardSlot } from "./CardSlot";
-import { buildDeckShareLink } from "@/lib/deck-utils";
-import { CopyDeckIcon } from "@/components/ui/CopyDeckIcon";
 
-type Tab = "decks" | "collection";
+type Tab = "browser" | "popular" | "builder" | "import";
 
 interface DeckBrowserProps {
   decks: DeckEntry[];
+  initialTab?: Tab;
 }
 
-export function DeckBrowser({ decks }: DeckBrowserProps) {
-  const [tab, setTab] = useState<Tab>("decks");
-  const [deckSlot, setDeckSlot] = useState(1);
+export function DeckBrowser({ decks, initialTab = "browser" }: DeckBrowserProps) {
+  const [tab, setTab] = useState<Tab>(initialTab);
   const [selectedDeck, setSelectedDeck] = useState<DeckEntry | null>(decks[0] ?? null);
   const [builderIds, setBuilderIds] = useState<number[]>([]);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [importOpen, setImportOpen] = useState(false);
   const [importInput, setImportInput] = useState("");
-  const [sortBy, setSortBy] = useState<"elixir" | "name">("elixir");
-  const [isBuilding, setIsBuilding] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [importError, setImportError] = useState("");
+  const [sortBy, setSortBy] = useState<"elixir" | "name" | "rarity">("elixir");
+  const [filterRarity, setFilterRarity] = useState<string>("all");
+  const [search, setSearch] = useState("");
 
-  const activeIds = isBuilding ? builderIds : (selectedDeck?.cardIds ?? []);
-  const activeCards = useMemo(() => getCardsByIds(activeIds), [activeIds]);
-  const collectionCards = useMemo(() => sortCards(CARDS, sortBy), [sortBy]);
+  const builderCards = useMemo(() => getCardsByIds(builderIds), [builderIds]);
+  const selectedCards = useMemo(
+    () => (selectedDeck ? getCardsByIds(selectedDeck.cardIds) : []),
+    [selectedDeck]
+  );
 
-  const pickDeck = (deck: DeckEntry) => {
-    setSelectedDeck(deck);
-    setIsBuilding(false);
-    setMenuOpen(false);
-  };
+  const collectionCards = useMemo(() => {
+    let cards = sortCards(CARDS, sortBy);
+    if (filterRarity !== "all") {
+      cards = cards.filter((c) => c.rarity === filterRarity);
+    }
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      cards = cards.filter((c) => c.name.toLowerCase().includes(q));
+    }
+    return cards;
+  }, [sortBy, filterRarity, search]);
+
+  const popularDecks = useMemo(
+    () => [...decks].sort((a, b) => (b.winRate ?? 0) - (a.winRate ?? 0)),
+    [decks]
+  );
+
+  const filteredDecks = useMemo(() => {
+    const list = tab === "popular" ? popularDecks : decks;
+    if (!search.trim() || tab === "builder" || tab === "import") return list;
+    const q = search.trim().toLowerCase();
+    return list.filter(
+      (d) =>
+        d.name.toLowerCase().includes(q) ||
+        d.archetype.toLowerCase().includes(q) ||
+        d.tags.some((t) => t.toLowerCase().includes(q))
+    );
+  }, [tab, popularDecks, decks, search]);
 
   const addCard = useCallback((card: Card) => {
-    setIsBuilding(true);
     setBuilderIds((prev) => {
       if (prev.length >= 8 || prev.includes(card.id)) return prev;
       return [...prev, card.id];
     });
-    setTab("decks");
+  }, []);
+
+  const removeCard = useCallback((index: number) => {
+    setBuilderIds((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
   const handleImport = () => {
     const ids = parseShareCode(importInput);
-    if (!ids) return;
-    const { valid } = validateDeck(ids);
-    if (!valid) return;
+    if (!ids) {
+      setImportError("Invalid share code. Paste a link.clashroyale.com URL or semicolon-separated card IDs.");
+      return;
+    }
+    const { valid, error } = validateDeck(ids);
+    if (!valid) {
+      setImportError(error ?? "Invalid deck");
+      return;
+    }
+    setImportError("");
     setBuilderIds(ids);
-    setIsBuilding(true);
-    setImportOpen(false);
-    setTab("decks");
+    setTab("builder");
   };
 
-  const shareLink = selectedDeck?.shareCode ?? (builderIds.length === 8 ? buildDeckShareLink(builderIds) : "");
-
-  const copyDeck = async () => {
-    if (!shareLink) return;
-    await navigator.clipboard.writeText(shareLink);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1500);
-  };
+  const tabs: { id: Tab; label: string }[] = [
+    { id: "browser", label: "Browse" },
+    { id: "popular", label: "Popular" },
+    { id: "builder", label: "Builder" },
+    { id: "import", label: "Import" },
+  ];
 
   return (
-    <div className="flex flex-col gap-2 pb-2">
-      <div className="grid grid-cols-2 gap-1">
-        {(["Decks", "Collection"] as const).map((label, i) => {
-          const t: Tab = i === 0 ? "decks" : "collection";
-          return (
-            <button
-              key={label}
-              type="button"
-              onClick={() => setTab(t)}
-              className={`cr-display py-3.5 text-base font-bold ${tab === t ? "cr-mega-tab-on" : "cr-mega-tab-off"}`}
-            >
-              {label}
-            </button>
-          );
-        })}
+    <div className="space-y-6">
+      <div className="cr-panel p-4 sm:p-6">
+        <h1 className="text-2xl text-cr-gold sm:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
+          Deck Center
+        </h1>
+        <p className="mt-1 text-sm text-cr-text-muted">
+          Browse meta decks, build your own, or import a deck shared from in-game.
+        </p>
       </div>
 
-      {tab === "decks" && (
-        <>
-          <div className="cr-deck-toolbar flex items-center gap-2">
-            <button type="button" onClick={() => setMenuOpen(!menuOpen)} className="cr-filter-btn flex h-9 w-9 shrink-0 items-center justify-center text-lg">
-              ☰
-            </button>
-            <div className="flex flex-1 justify-center gap-1.5">
-              {[1, 2, 3].map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  onClick={() => setDeckSlot(n)}
-                  className={`cr-display flex h-9 w-9 items-center justify-center text-sm font-bold ${deckSlot === n ? "cr-slot-on" : "cr-slot-off"}`}
-                >
-                  {n}
-                </button>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={copyDeck}
-              disabled={!shareLink}
-              className={`cr-filter-btn flex h-9 w-9 shrink-0 items-center justify-center ${!shareLink ? "opacity-40" : ""}`}
-              aria-label="Copy deck"
-            >
-              <CopyDeckIcon className="h-5 w-5" />
-            </button>
-          </div>
+      <div className="flex flex-wrap gap-2">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => setTab(t.id)}
+            className={`rounded-xl px-4 py-2.5 text-sm font-bold transition ${tab === t.id ? "cr-tab-active" : "cr-tab-inactive"}`}
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
 
-          {menuOpen && (
-            <div className="max-h-36 overflow-y-auto rounded-lg border border-[#2878c0]/40 bg-[#0a1830]/95 p-1 scrollbar-hide">
-              {decks.map((deck) => (
+      {(tab === "browser" || tab === "popular") && (
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+          <div className="space-y-3">
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search decks..."
+              className="w-full rounded-xl border border-cr-blue/40 bg-cr-bg-deep px-4 py-2.5 text-sm text-white placeholder:text-cr-text-muted"
+            />
+
+            <div className="max-h-[65vh] space-y-2 overflow-y-auto pr-1 scrollbar-hide">
+              {filteredDecks.map((deck) => (
                 <button
                   key={deck.id}
                   type="button"
-                  onClick={() => pickDeck(deck)}
-                  className={`cr-display mb-1 w-full rounded-lg px-3 py-2 text-left text-sm font-bold ${selectedDeck?.id === deck.id ? "bg-[#2878c0]" : "bg-[#1a3050]/80"}`}
+                  onClick={() => setSelectedDeck(deck)}
+                  className={`w-full rounded-xl border p-3 text-left transition ${
+                    selectedDeck?.id === deck.id
+                      ? "border-cr-gold bg-cr-panel-light/60"
+                      : "border-cr-blue/30 bg-cr-panel/40 hover:border-cr-blue-bright/50"
+                  }`}
                 >
-                  {deck.name}
-                  <span className="float-right text-[#e532d2]">{deck.avgElixir}</span>
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-bold text-white" style={{ fontFamily: "var(--font-display)" }}>
+                        {deck.name}
+                      </p>
+                      <p className="text-xs text-cr-text-muted">{deck.archetype}</p>
+                    </div>
+                    <span className="rounded-full bg-cr-elixir/20 px-2 py-0.5 text-xs font-bold text-cr-elixir">
+                      {deck.avgElixir}
+                    </span>
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    {deck.tags.map((tag) => (
+                      <span key={tag} className="rounded bg-cr-bg-deep/60 px-1.5 py-0.5 text-[10px] text-cr-blue-bright">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  {deck.winRate != null && (
+                    <p className="mt-1 text-xs text-cr-green">Win rate: {deck.winRate}%</p>
+                  )}
                 </button>
               ))}
-              <button type="button" onClick={() => { setImportOpen(true); setMenuOpen(false); }} className="cr-display w-full rounded-lg bg-[#1a3050]/80 px-3 py-2 text-left text-sm font-bold">
-                Import Deck
+              {filteredDecks.length === 0 && (
+                <p className="py-8 text-center text-sm text-cr-text-muted">No decks match your search.</p>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {selectedDeck ? (
+              <>
+                <div className="cr-panel p-4">
+                  <h2 className="text-xl text-white" style={{ fontFamily: "var(--font-display)" }}>
+                    {selectedDeck.name}
+                  </h2>
+                  <p className="text-sm text-cr-text-muted">{selectedDeck.archetype}</p>
+                </div>
+                <DeckGrid cards={selectedCards} />
+                {selectedDeck.shareCode && (
+                  <ShareCodeBar shareCode={selectedDeck.shareCode} deckName={selectedDeck.name} />
+                )}
+              </>
+            ) : (
+              <div className="cr-panel p-8 text-center text-cr-text-muted">
+                Select a deck from the list to view it.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {tab === "builder" && (
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+          <div className="space-y-4">
+            <DeckGrid
+              cards={builderCards}
+              emptySlots={8 - builderCards.length}
+              onCardRemove={removeCard}
+            />
+            {builderIds.length === 8 ? (
+              <div className="cr-panel p-4 text-sm text-cr-text-muted">
+                <p className="font-bold text-cr-gold" style={{ fontFamily: "var(--font-display)" }}>
+                  Deck complete
+                </p>
+                <p className="mt-1">
+                  Custom decks don&apos;t have in-game share codes yet. Use Import to load a deck from
+                  Clash Royale, or browse meta decks for verified import links.
+                </p>
+              </div>
+            ) : (
+              <p className="text-center text-sm text-cr-text-muted">
+                Tap cards from the collection to add them. Click × on a card to remove it.
+              </p>
+            )}
+            {builderIds.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setBuilderIds([])}
+                className="w-full rounded-xl border border-red-500/40 py-2 text-sm text-red-400 hover:bg-red-500/10"
+              >
+                Clear Deck
               </button>
-            </div>
-          )}
-
-          {importOpen && (
-            <div className="cr-deck-panel space-y-2 p-3">
-              <textarea
-                value={importInput}
-                onChange={(e) => setImportInput(e.target.value)}
-                placeholder="Paste deck link..."
-                className="h-16 w-full rounded-lg border border-[#2878c0]/40 bg-[#0a1830] p-2 text-xs text-white"
-              />
-              <div className="flex gap-2">
-                <button type="button" onClick={handleImport} className="cr-filter-btn flex-1 py-2 text-sm">Import</button>
-                <button type="button" onClick={() => setImportOpen(false)} className="cr-filter-btn flex-1 py-2 text-sm opacity-70">Cancel</button>
-              </div>
-            </div>
-          )}
-
-          <DeckGrid cards={activeCards} />
-
-          <div className="mt-1">
-            <div className="flex items-end justify-between px-0.5">
-              <div>
-                <p className="cr-display text-sm font-bold">Card Collection</p>
-                <p className="cr-display text-[10px] font-bold text-[#ff66bb]">Challenge Event</p>
-              </div>
-              <div className="flex gap-1">
-                <button type="button" className="cr-filter-btn h-7 w-7 text-xs">⚙</button>
-                <button type="button" className="cr-filter-btn h-7 w-7 text-xs">↑</button>
-                <button
-                  type="button"
-                  onClick={() => setSortBy(sortBy === "elixir" ? "name" : "elixir")}
-                  className="cr-filter-btn px-2 py-1 text-[10px]"
-                >
-                  By Elixir
-                </button>
-              </div>
-            </div>
-            <p className="cr-display mt-1 px-0.5 text-[10px] font-bold text-[#8aaee0]">Found</p>
-            <div className="mt-1 grid grid-cols-4 gap-[2px]">
-              {collectionCards.slice(0, 20).map((card, i) => (
-                <CardSlot key={card.id} card={card} variant="collection" index={i} onClick={() => addCard(card)} />
-              ))}
-            </div>
+            )}
           </div>
-        </>
-      )}
 
-      {tab === "collection" && (
-        <>
-          <div className="flex items-end justify-between px-0.5">
-            <div>
-              <p className="cr-display text-sm font-bold">Card Collection</p>
-              <p className="cr-display text-[10px] font-bold text-[#ff66bb]">Challenge Event</p>
-            </div>
-            <div className="flex gap-1">
-              <button type="button" className="cr-filter-btn h-7 w-7 text-xs">⚙</button>
-              <button type="button" className="cr-filter-btn h-7 w-7 text-xs">↑</button>
-              <button type="button" onClick={() => setSortBy(sortBy === "elixir" ? "name" : "elixir")} className="cr-filter-btn px-2 py-1 text-[10px]">
-                By Elixir
+          <div className="cr-panel p-4">
+            <h3 className="mb-1 text-lg text-white" style={{ fontFamily: "var(--font-display)" }}>
+              Card Collection
+            </h3>
+            <p className="mb-3 text-xs text-cr-pink">{builderIds.length}/8 cards selected</p>
+
+            <div className="mb-3 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setSortBy(sortBy === "elixir" ? "name" : sortBy === "name" ? "rarity" : "elixir")}
+                className="cr-btn-blue text-xs"
+              >
+                Sort: {sortBy === "elixir" ? "Elixir" : sortBy === "name" ? "Name" : "Rarity"}
               </button>
+              <select
+                value={filterRarity}
+                onChange={(e) => setFilterRarity(e.target.value)}
+                className="rounded-lg border border-cr-blue/40 bg-cr-bg-deep px-2 py-1 text-xs text-white"
+              >
+                <option value="all">All Rarities</option>
+                <option value="Common">Common</option>
+                <option value="Rare">Rare</option>
+                <option value="Epic">Epic</option>
+                <option value="Legendary">Legendary</option>
+                <option value="Champion">Champion</option>
+              </select>
+            </div>
+
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search cards..."
+              className="mb-3 w-full rounded-lg border border-cr-blue/40 bg-cr-bg-deep px-3 py-2 text-xs text-white placeholder:text-cr-text-muted"
+            />
+
+            <div className="grid max-h-[55vh] grid-cols-4 gap-2 overflow-y-auto pr-1 sm:grid-cols-5 scrollbar-hide">
+              {collectionCards.map((card) => {
+                const inDeck = builderIds.includes(card.id);
+                return (
+                  <div key={card.id} className={inDeck ? "opacity-40" : ""}>
+                    <CardSlot
+                      card={card}
+                      size="collection"
+                      onClick={() => !inDeck && addCard(card)}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
-          <p className="cr-display px-0.5 text-[10px] font-bold text-[#8aaee0]">Found</p>
-          <div className="grid grid-cols-4 gap-[2px]">
-            {collectionCards.map((card, i) => (
-              <CardSlot key={card.id} card={card} variant="collection" index={i} onClick={() => addCard(card)} />
-            ))}
-          </div>
-        </>
+        </div>
       )}
 
-      {copied && (
-        <p className="cr-display text-center text-xs font-bold text-[#33dd77]">Deck copied!</p>
+      {tab === "import" && (
+        <div className="cr-panel mx-auto max-w-xl space-y-4 p-6">
+          <h3 className="text-xl text-cr-gold" style={{ fontFamily: "var(--font-display)" }}>
+            Import Deck
+          </h3>
+          <p className="text-sm text-cr-text-muted">
+            Paste a deck link shared from Clash Royale or another site. This loads the deck into the
+            builder so you can study or tweak it.
+          </p>
+          <textarea
+            value={importInput}
+            onChange={(e) => setImportInput(e.target.value)}
+            placeholder="https://link.clashroyale.com/deck/en?deck=26000000;26000001;..."
+            className="h-24 w-full rounded-xl border border-cr-blue/40 bg-cr-bg-deep p-3 text-sm text-white placeholder:text-cr-text-muted"
+          />
+          {importError && <p className="text-sm text-red-400">{importError}</p>}
+          <button type="button" onClick={handleImport} className="cr-btn-gold w-full">
+            Import to Builder
+          </button>
+        </div>
       )}
-
-      <div className="flex justify-center safe-bottom mt-2 px-6">
-        <button type="button" className="cr-btn-ok">
-          OK
-        </button>
-      </div>
     </div>
   );
 }

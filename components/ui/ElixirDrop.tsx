@@ -1,6 +1,6 @@
-export function ElixirDrop({ cost, size = "md" }: { cost: number | string; size?: "xs" | "sm" | "md" }) {
-  const px = size === "xs" ? 18 : size === "sm" ? 22 : 28;
-  const font = size === "xs" ? 9 : size === "sm" ? 11 : 13;
+export function ElixirDrop({ cost, size = "md" }: { cost: number | string; size?: "xs" | "sm" | "md" | "lg" }) {
+  const px = size === "xs" ? 18 : size === "sm" ? 22 : size === "lg" ? 36 : 28;
+  const font = size === "xs" ? 9 : size === "sm" ? 11 : size === "lg" ? 16 : 13;
 
   return (
     <div
