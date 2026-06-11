@@ -1,189 +1,151 @@
 @import "tailwindcss";
 
 @theme {
-  --color-cr-bg: #0b1a33;
-  --color-cr-bg-deep: #060f1f;
-  --color-cr-arena: #0d2040;
-  --color-cr-panel: #14325e;
-  --color-cr-panel-light: #1f4a85;
-  --color-cr-blue: #2a6fc0;
-  --color-cr-blue-bright: #5eb3ff;
-  --color-cr-blue-tab: #1a4f8f;
-  --color-cr-blue-dark: #0f3468;
-  --color-cr-gold: #ffd34d;
-  --color-cr-gold-dark: #c9a020;
-  --color-cr-gold-shadow: #8a6510;
-  --color-cr-elixir: #ff3db8;
-  --color-cr-elixir-glow: #ff6ed4;
-  --color-cr-green: #3ddc6e;
-  --color-cr-gem: #2ee89a;
-  --color-cr-pink: #ff5ec4;
-  --color-cr-evolve: #ff4fd8;
-  --color-cr-text: #f4f8ff;
-  --color-cr-text-muted: #8aaee0;
+  --color-cr-arena: #0c1a32;
+  --color-cr-arena-deep: #081222;
+  --color-cr-blue-top: #4db8ff;
+  --color-cr-blue-mid: #2a7fd4;
+  --color-cr-blue-bot: #1a5599;
+  --color-cr-blue-dark: #0f3a6e;
+  --color-cr-tab-off: #1a4a7a;
+  --color-cr-gold: #ffcc33;
+  --color-cr-gold-dark: #cc9900;
+  --color-cr-elixir: #e532d2;
+  --color-cr-green-gem: #33dd77;
+  --color-cr-pink: #ff66bb;
+  --color-cr-text: #ffffff;
   --font-display: var(--font-lilita), "Lilita One", system-ui, sans-serif;
-  --font-body: var(--font-nunito), "Nunito", system-ui, sans-serif;
 }
 
 @layer base {
-  * {
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  html {
-    scroll-behavior: smooth;
-    background: #020810;
-  }
-
+  * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+  html { background: #040a14; }
   body {
-    @apply bg-cr-bg-deep text-cr-text antialiased;
-    font-family: var(--font-body);
-    overscroll-behavior: none;
-  }
-
-  h1, h2, h3, h4 {
-    font-family: var(--font-display);
-    letter-spacing: 0.03em;
-    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.55), 0 0 20px rgba(0, 0, 0, 0.25);
+    margin: 0;
+    background: var(--color-cr-arena-deep);
+    color: var(--color-cr-text);
+    font-family: system-ui, sans-serif;
+    overflow-x: hidden;
   }
 }
 
-@layer utilities {
-  .mobile-shell {
-    @apply relative mx-auto flex min-h-dvh w-full max-w-[430px] flex-col overflow-x-hidden;
-    box-shadow: 0 0 80px rgba(0, 0, 0, 0.65);
-  }
+/* Ingame diamond tile background */
+.cr-tile-bg {
+  background-color: #0e2244;
+  background-image:
+    linear-gradient(135deg, rgba(45, 100, 170, 0.28) 25%, transparent 25%),
+    linear-gradient(225deg, rgba(45, 100, 170, 0.28) 25%, transparent 25%),
+    linear-gradient(45deg, rgba(45, 100, 170, 0.28) 25%, transparent 25%),
+    linear-gradient(315deg, rgba(45, 100, 170, 0.28) 25%, transparent 25%);
+  background-size: 16px 16px;
+}
 
-  .cr-arena-bg {
-    background-color: #0c1e3a;
-    background-image:
-      linear-gradient(135deg, rgba(36, 90, 160, 0.22) 25%, transparent 25%),
-      linear-gradient(225deg, rgba(36, 90, 160, 0.22) 25%, transparent 25%),
-      linear-gradient(45deg, rgba(36, 90, 160, 0.22) 25%, transparent 25%),
-      linear-gradient(315deg, rgba(36, 90, 160, 0.22) 25%, transparent 25%),
-      radial-gradient(ellipse 120% 60% at 50% -10%, rgba(46, 120, 210, 0.18), transparent 55%);
-    background-size: 18px 18px, 18px 18px, 18px 18px, 18px 18px, 100% 100%;
-  }
+.cr-app {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100dvh;
+  margin: 0 auto;
+}
 
-  .cr-deck-surface {
-    @apply rounded-2xl border border-cr-blue/25 p-2;
-    background: linear-gradient(180deg, rgba(20, 50, 94, 0.95) 0%, rgba(10, 28, 56, 0.98) 100%);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.08),
-      inset 0 -4px 12px rgba(0, 0, 0, 0.35),
-      0 8px 24px rgba(0, 0, 0, 0.45);
-  }
-
-  .cr-tab-pill-active {
-    @apply text-white;
-    background: linear-gradient(180deg, #5eb3ff 0%, #2a6fc0 45%, #1a4f8f 100%);
-    box-shadow:
-      inset 0 2px 0 rgba(255, 255, 255, 0.35),
-      inset 0 -3px 0 rgba(0, 0, 0, 0.25),
-      0 4px 12px rgba(0, 0, 0, 0.35);
-  }
-
-  .cr-tab-pill-inactive {
-    @apply text-cr-text-muted;
-    background: linear-gradient(180deg, #1f4a85 0%, #14325e 100%);
-    box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.3);
-  }
-
-  .cr-btn-gold {
-    @apply relative rounded-2xl px-6 py-3.5 text-center font-bold text-[#3a2800];
-    font-family: var(--font-display);
-    background: linear-gradient(180deg, #ffe566 0%, #ffd34d 35%, #e8b020 100%);
-    box-shadow:
-      inset 0 2px 0 rgba(255, 255, 255, 0.55),
-      inset 0 -4px 0 #a87810,
-      0 6px 0 #6b4e08,
-      0 10px 24px rgba(0, 0, 0, 0.4);
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
-  }
-
-  .cr-btn-gold:active {
-    transform: translateY(4px);
-    box-shadow:
-      inset 0 2px 0 rgba(255, 255, 255, 0.55),
-      inset 0 -2px 0 #a87810,
-      0 2px 0 #6b4e08;
-  }
-
-  .cr-btn-blue {
-    @apply rounded-xl px-4 py-2.5 font-bold text-white;
-    font-family: var(--font-display);
-    background: linear-gradient(180deg, #5eb3ff 0%, #2a6fc0 100%);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.3),
-      0 4px 0 #0f3468;
-  }
-
-  .cr-btn-blue:active {
-    transform: translateY(2px);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 2px 0 #0f3468;
-  }
-
-  .cr-card-frame-common {
-    background: linear-gradient(160deg, #6b7f99 0%, #3d4f66 40%, #2a3545 100%);
-  }
-
-  .cr-card-frame-rare {
-    background: linear-gradient(160deg, #ffb84d 0%, #e8871a 40%, #a85e08 100%);
-  }
-
-  .cr-card-frame-epic {
-    background: linear-gradient(160deg, #d96bff 0%, #9b3fd4 40%, #5e2080 100%);
-  }
-
-  .cr-card-frame-legendary {
-    background: linear-gradient(160deg, #fff0a0 0%, #ffd34d 25%, #ff8c42 55%, #c44dff 100%);
-  }
-
-  .cr-card-frame-champion {
-    background: linear-gradient(160deg, #7afff5 0%, #2ee8d0 40%, #0a9e8c 100%);
-  }
-
-  .cr-evolve-ring {
-    box-shadow:
-      0 0 0 2px #ff4fd8,
-      0 0 12px rgba(255, 79, 216, 0.65),
-      inset 0 0 8px rgba(255, 79, 216, 0.25);
-  }
-
-  .safe-bottom {
-    padding-bottom: max(1rem, env(safe-area-inset-bottom));
-  }
-
-  .safe-top {
-    padding-top: max(0.5rem, env(safe-area-inset-top));
-  }
-
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-
-  @keyframes card-pop {
-    from { transform: scale(0.92); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-  }
-
-  .animate-card-pop {
-    animation: card-pop 0.28s cubic-bezier(0.34, 1.4, 0.64, 1) both;
-  }
-
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
-
-  .cr-shimmer {
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
-    background-size: 200% 100%;
-    animation: shimmer 2.5s infinite;
+@media (min-width: 480px) {
+  .cr-app {
+    max-width: 430px;
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.8);
   }
 }
+
+.cr-display {
+  font-family: var(--font-display);
+  text-shadow: 0 2px 0 #000, 0 3px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* Resource bars — exact ingame style */
+.cr-res-crown {
+  background: linear-gradient(180deg, #3d8fd4 0%, #2568a8 50%, #1a4f85 100%);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,0.25), 0 3px 0 #0a2848;
+  border-radius: 10px;
+}
+
+.cr-res-gold {
+  background: linear-gradient(180deg, #ffe566 0%, #f5c020 50%, #d4a010 100%);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,0.4), 0 3px 0 #8a6508;
+  border-radius: 10px;
+}
+
+.cr-res-gem {
+  background: linear-gradient(180deg, #55ee99 0%, #2ecc71 50%, #1fa855 100%);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,0.35), 0 3px 0 #0d6b38;
+  border-radius: 10px;
+}
+
+/* Mega tabs: Decks | Collection */
+.cr-mega-tab-on {
+  background: linear-gradient(180deg, #5ec4ff 0%, #3a9de8 35%, #2878c0 70%, #1a5a99 100%);
+  box-shadow: inset 0 3px 0 rgba(255,255,255,0.35), inset 0 -4px 0 rgba(0,0,0,0.2), 0 4px 0 #0a3058;
+  border-radius: 14px 14px 10px 10px;
+}
+
+.cr-mega-tab-off {
+  background: linear-gradient(180deg, #2a6aaa 0%, #1a5088 50%, #123d6a 100%);
+  box-shadow: inset 0 -3px 0 rgba(0,0,0,0.3), 0 3px 0 #081e38;
+  border-radius: 14px 14px 10px 10px;
+  opacity: 0.85;
+}
+
+/* Deck slot buttons */
+.cr-slot-on {
+  background: #fff;
+  color: #1a3050;
+  border: 3px solid #ffcc33;
+  box-shadow: 0 2px 0 #8a6508;
+  border-radius: 8px;
+}
+
+.cr-slot-off {
+  background: linear-gradient(180deg, #3a7fc0, #1a5088);
+  color: #aaccee;
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,0.3), 0 2px 0 #0a2848;
+  border-radius: 8px;
+}
+
+/* OK button */
+.cr-btn-ok {
+  background: linear-gradient(180deg, #5ec4ff 0%, #3a9de8 30%, #2878c0 70%, #1a5a99 100%);
+  box-shadow: inset 0 3px 0 rgba(255,255,255,0.3), 0 5px 0 #0a3058, 0 8px 16px rgba(0,0,0,0.4);
+  border-radius: 14px;
+  border: none;
+  color: white;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  text-shadow: 0 2px 0 #000;
+  padding: 14px;
+  width: 100%;
+}
+
+.cr-btn-ok:active {
+  transform: translateY(3px);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,0.3), 0 2px 0 #0a3058;
+}
+
+/* Filter pills */
+.cr-filter-btn {
+  background: linear-gradient(180deg, #3a9de8, #1a5a99);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), 0 3px 0 #0a3058;
+  border-radius: 10px;
+  color: white;
+  font-family: var(--font-display);
+  text-shadow: 0 1px 0 #000;
+}
+
+.cr-deck-panel {
+  background: linear-gradient(180deg, rgba(18,45,82,0.95) 0%, rgba(10,28,52,0.98) 100%);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 12px rgba(0,0,0,0.35);
+}
+
+.safe-top { padding-top: max(4px, env(safe-area-inset-top)); }
+.safe-bottom { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+
+.scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }

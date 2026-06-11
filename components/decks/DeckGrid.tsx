@@ -7,71 +7,48 @@ import { averageElixir } from "@/lib/cards";
 
 interface DeckGridProps {
   cards: Card[];
-  showStats?: boolean;
-  variant?: "deck" | "collection";
   onCardClick?: (index: number) => void;
-  onCardRemove?: (index: number) => void;
-  emptySlots?: number;
+  variant?: "deck" | "collection";
 }
 
-export function DeckGrid({
-  cards,
-  showStats = true,
-  variant = "deck",
-  onCardClick,
-  onCardRemove,
-  emptySlots = 0,
-}: DeckGridProps) {
+export function DeckGrid({ cards, onCardClick, variant = "deck" }: DeckGridProps) {
   const avg = averageElixir(cards.map((c) => c.id));
   const slots = [...cards];
   while (slots.length < 8) slots.push(undefined as unknown as Card);
 
   return (
-    <div className="cr-deck-surface">
-      <div className="grid grid-cols-4 gap-1">
+    <div className="cr-deck-panel">
+      <div className="grid grid-cols-4 gap-[3px]">
         {slots.slice(0, 8).map((card, i) => (
           <CardSlot
-            key={card?.id ?? `empty-${i}`}
+            key={card?.id ?? `e-${i}`}
             card={card}
             empty={!card}
             variant={variant}
             index={i}
-            evolved={card?.rarity === "Legendary" && i < 3}
+            evolved={card?.rarity === "Legendary" && i === 0}
+            champion={card?.rarity === "Legendary" && i === 1}
             onClick={onCardClick ? () => onCardClick(i) : undefined}
-            onRemove={onCardRemove && card ? () => onCardRemove(i) : undefined}
           />
         ))}
       </div>
 
-      {showStats && (
-        <div className="mt-2 flex items-center justify-between px-1">
-          <div className="flex items-center gap-2">
+      {cards.length > 0 && (
+        <div className="mt-1.5 flex items-center justify-between px-0.5">
+          <div className="flex items-center gap-1.5">
             <ElixirDrop cost={avg} size="md" />
-            <div>
-              <p className="text-[9px] font-bold tracking-wider text-cr-text-muted uppercase">
-                Avg Elixir
-              </p>
-              <p className="text-lg leading-none font-bold text-white" style={{ fontFamily: "var(--font-display)" }}>
-                {cards.length ? avg : "—"}
-              </p>
-            </div>
+            <span className="cr-display text-xl font-bold text-white">{avg}</span>
           </div>
           <div
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-base"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-sm"
             style={{
-              background: "linear-gradient(180deg, #2a6fc0, #1a4f8f)",
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.2)",
+              background: "linear-gradient(180deg,#3a9de8,#1a5a99)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.2), 0 2px 0 #0a3058",
             }}
           >
             🛡️
           </div>
         </div>
-      )}
-
-      {emptySlots > 0 && (
-        <p className="mt-1.5 text-center text-xs font-bold text-cr-gold">
-          {8 - cards.length} more card{8 - cards.length !== 1 ? "s" : ""} needed
-        </p>
       )}
     </div>
   );
