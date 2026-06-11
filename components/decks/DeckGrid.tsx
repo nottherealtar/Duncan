@@ -8,7 +8,7 @@ import { averageElixir } from "@/lib/cards";
 interface DeckGridProps {
   cards: Card[];
   showStats?: boolean;
-  slotSize?: "deck" | "collection";
+  variant?: "deck" | "collection";
   onCardClick?: (index: number) => void;
   onCardRemove?: (index: number) => void;
   emptySlots?: number;
@@ -17,7 +17,7 @@ interface DeckGridProps {
 export function DeckGrid({
   cards,
   showStats = true,
-  slotSize = "deck",
+  variant = "deck",
   onCardClick,
   onCardRemove,
   emptySlots = 0,
@@ -27,14 +27,15 @@ export function DeckGrid({
   while (slots.length < 8) slots.push(undefined as unknown as Card);
 
   return (
-    <div className="cr-diamond-bg rounded-2xl border border-cr-blue/30 p-4">
-      <div className="grid grid-cols-4 gap-2 sm:gap-3">
+    <div className="cr-deck-surface">
+      <div className="grid grid-cols-4 gap-1">
         {slots.slice(0, 8).map((card, i) => (
           <CardSlot
             key={card?.id ?? `empty-${i}`}
             card={card}
             empty={!card}
-            size={slotSize}
+            variant={variant}
+            index={i}
             evolved={card?.rarity === "Legendary" && i < 3}
             onClick={onCardClick ? () => onCardClick(i) : undefined}
             onRemove={onCardRemove && card ? () => onCardRemove(i) : undefined}
@@ -42,26 +43,34 @@ export function DeckGrid({
         ))}
       </div>
 
-      {showStats && cards.length > 0 && (
-        <div className="mt-4 flex items-center justify-between">
+      {showStats && (
+        <div className="mt-2 flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
-            <ElixirDrop cost={avg} size="lg" />
+            <ElixirDrop cost={avg} size="md" />
             <div>
-              <p className="text-xs text-cr-text-muted">Average Elixir</p>
-              <p className="text-xl font-bold text-white" style={{ fontFamily: "var(--font-display)" }}>
-                {avg}
+              <p className="text-[9px] font-bold tracking-wider text-cr-text-muted uppercase">
+                Avg Elixir
+              </p>
+              <p className="text-lg leading-none font-bold text-white" style={{ fontFamily: "var(--font-display)" }}>
+                {cards.length ? avg : "—"}
               </p>
             </div>
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-cr-panel-light/80 text-lg">
+          <div
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-base"
+            style={{
+              background: "linear-gradient(180deg, #2a6fc0, #1a4f8f)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.2)",
+            }}
+          >
             🛡️
           </div>
         </div>
       )}
 
       {emptySlots > 0 && (
-        <p className="mt-2 text-center text-sm text-cr-gold">
-          {8 - cards.length} slot{8 - cards.length !== 1 ? "s" : ""} remaining
+        <p className="mt-1.5 text-center text-xs font-bold text-cr-gold">
+          {8 - cards.length} more card{8 - cards.length !== 1 ? "s" : ""} needed
         </p>
       )}
     </div>

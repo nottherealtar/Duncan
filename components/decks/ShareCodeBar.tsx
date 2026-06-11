@@ -22,31 +22,26 @@ export function ShareCodeBar({ cardIds }: ShareCodeBarProps) {
   if (!valid) return null;
 
   return (
-    <div className="cr-panel space-y-3 p-4">
-      <h3 className="text-lg text-cr-gold" style={{ fontFamily: "var(--font-display)" }}>
-        Share Code
-      </h3>
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <input
-          readOnly
-          value={shareLink}
-          className="flex-1 rounded-lg border border-cr-blue/40 bg-cr-bg-deep px-3 py-2 text-sm text-cr-text-muted"
-        />
-        <button type="button" onClick={copyLink} className="cr-btn-blue whitespace-nowrap">
-          {copied ? "Copied!" : "Copy Link"}
-        </button>
-      </div>
-      <div className="flex flex-wrap gap-3">
-        <a href={shareLink} className="cr-btn-gold inline-block text-center">
-          Open in Clash Royale
-        </a>
-        <a href={deepLink} className="cr-btn-blue inline-block text-center">
-          Deep Link (Mobile)
-        </a>
-      </div>
-      <p className="text-xs text-cr-text-muted">
-        Tap &quot;Open in Clash Royale&quot; on mobile to import this deck directly into the game.
+    <div className="cr-deck-surface space-y-2.5 p-3">
+      <p className="text-sm font-bold text-cr-gold" style={{ fontFamily: "var(--font-display)" }}>
+        Share Deck
       </p>
+      <div
+        className="overflow-hidden rounded-xl border border-cr-blue/30 bg-cr-bg-deep/80 p-2.5 text-[11px] leading-snug break-all text-cr-text-muted"
+      >
+        {shareLink}
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <button type="button" onClick={copyLink} className="cr-btn-blue text-sm">
+          {copied ? "Copied!" : "Copy"}
+        </button>
+        <a href={shareLink} className="cr-btn-gold flex items-center justify-center text-sm">
+          Open Game
+        </a>
+      </div>
+      <a href={deepLink} className="block text-center text-[11px] font-bold text-cr-blue-bright underline">
+        Mobile deep link
+      </a>
     </div>
   );
 }

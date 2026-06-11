@@ -1,14 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
+import { MobileShell } from "@/components/layout/MobileShell";
 import { PWARegister } from "@/components/PWARegister";
 import { lilita, nunito } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Duncan — Clash Royale Companion PWA",
-  description:
-    "Fan-made Clash Royale PWA with meta deck browser, ingame-style deck builder, and Supercell API player stats.",
+  title: "Duncan — Clash Royale",
+  description: "Mobile Clash Royale companion — meta decks, deck builder, player scout.",
   applicationName: "Duncan",
   appleWebApp: {
     capable: true,
@@ -22,20 +20,20 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a1628",
+  themeColor: "#0b1a33",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${lilita.variable} ${nunito.variable}`}>
-      <body className="min-h-screen">
+      <body>
         <PWARegister />
-        <Header />
-        <main className="mx-auto min-h-[70vh] max-w-6xl px-4 py-8">{children}</main>
-        <Footer />
+        <MobileShell>{children}</MobileShell>
       </body>
     </html>
   );

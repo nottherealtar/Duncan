@@ -3,7 +3,7 @@
 import Image from "next/image";
 import type { Card } from "@/lib/types";
 import { ElixirDrop } from "@/components/ui/ElixirDrop";
-import { rarityColor } from "@/lib/deck-utils";
+import { cardFrameClass } from "@/lib/card-styles";
 
 interface CardSlotProps {
   card?: Card;
@@ -14,7 +14,8 @@ interface CardSlotProps {
   empty?: boolean;
   onClick?: () => void;
   onRemove?: () => void;
-  size?: "deck" | "collection";
+  variant?: "deck" | "collection" | "mini";
+  index?: number;
 }
 
 export function CardSlot({
@@ -26,9 +27,11 @@ export function CardSlot({
   empty = false,
   onClick,
   onRemove,
-  size = "deck",
+  variant = "deck",
+  index = 0,
 }: CardSlotProps) {
-  const isCollection = size === "collection";
+  const isDeck = variant === "deck";
+  const isMini = variant === "mini";
   const progressPct = Math.min(100, (progress / maxProgress) * 100);
   const ready = progressPct >= 100;
 
@@ -37,78 +40,102 @@ export function CardSlot({
       <button
         type="button"
         onClick={onClick}
-        className={`group relative flex flex-col overflow-hidden rounded-xl border-2 border-dashed border-cr-blue/50 bg-cr-bg-deep/60 transition hover:border-cr-gold/60 hover:bg-cr-panel/40 ${
-          isCollection ? "aspect-[3/4] w-full" : "aspect-[3/4.2] w-full"
+        className={`group relative w-full overflow-hidden rounded-lg border-2 border-dashed border-cr-blue-bright/30 bg-cr-bg-deep/50 ${
+          isDeck ? "aspect-[88/118]" : isMini ? "aspect-[88/118]" : "aspect-[88/118]"
         }`}
+        style={{ boxShadow: "inset 0 0 20px rgba(0,0,0,0.4)" }}
       >
-        <div className="flex flex-1 items-center justify-center text-cr-text-muted">
-          <span className="text-3xl opacity-40 group-hover:opacity-70">+</span>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-2xl font-light text-cr-blue-bright/30">+</span>
         </div>
       </button>
     );
   }
 
+  const frame = cardFrameClass(card.rarity);
+
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`group relative flex flex-col overflow-hidden rounded-xl border-2 transition hover:scale-[1.02] ${
-        evolved
-          ? "border-cr-pink shadow-[0_0_16px_rgba(255,110,180,0.5)]"
-          : "border-transparent shadow-lg"
-      } ${isCollection ? "aspect-[3/4] w-full" : "aspect-[3/4.2] w-full"}`}
+      className={`animate-card-pop group relative w-full overflow-hidden rounded-lg ${frame} ${
+        evolved ? "cr-evolve-ring" : ""
+      } ${isDeck ? "aspect-[88/118]" : "aspect-[88/118]"}`}
       style={{
-        boxShadow: evolved ? undefined : `0 4px 12px rgba(0,0,0,0.5), inset 0 0 0 2px ${rarityColor(card.rarity)}40`,
+        animationDelay: `${index * 35}ms`,
+        padding: isDeck ? "3px" : "2px",
+        boxShadow: evolved
+          ? undefined
+          : "0 4px 8px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.25)",
       }}
     >
       {evolved && (
-        <div className="absolute top-1 left-1/2 z-20 -translate-x-1/2 rounded-full bg-cr-pink px-2 py-0.5 text-[10px] font-bold text-white">
-          ✦
-        </div>
-      )}
-
-      <div className="absolute top-1.5 left-1.5 z-10">
-        <ElixirDrop cost={card.elixir} size="sm" />
-      </div>
-
-      {onRemove && (
-        <span
-          role="button"
-          tabIndex={0}
-          onClick={(e) => {
-            e.stopPropagation();
-            onRemove();
-          }}
-          onKeyDown={(e) => e.key === "Enter" && onRemove()}
-          className="absolute top-1.5 right-1.5 z-20 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-xs text-white opacity-0 transition group-hover:opacity-100"
-        >
-          ×
-        </span>
-      )}
-
-      <div className="relative flex-1 bg-gradient-to-b from-cr-panel-light to-cr-bg-deep">
-        <Image
-          src={card.iconUrl}
-          alt={card.name}
-          fill
-          className="object-contain p-1 pt-4"
-          sizes="120px"
-        />
-      </div>
-
-      <div className="relative z-10 bg-gradient-to-t from-black/90 via-black/70 to-transparent px-1.5 pt-4 pb-1">
-        <p className="truncate text-center text-[10px] font-bold text-white" style={{ fontFamily: "var(--font-display)" }}>
-          Level {level}
-        </p>
-        <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-black/50">
+        <div className="absolute top-0 left-1/2 z-30 -translate-x-1/2">
           <div
-            className={`h-full rounded-full transition-all ${ready ? "bg-cr-green" : "bg-cr-blue-bright"}`}
-            style={{ width: `${progressPct}%` }}
-          />
+            className="flex h-4 w-4 items-center justify-center rounded-full text-[8px] text-white"
+            style={{
+              background: "linear-gradient(180deg, #ff8ee0, #ff3db8)",
+              boxShadow: "0 0 8px rgba(255,79,216,0.8)",
+            }}
+          >
+            ✦
+          </div>
         </div>
-        <p className="mt-0.5 text-center text-[8px] text-cr-text-muted">
-          {progress}/{maxProgress}
-        </p>
+      )}
+
+      <div className="relative h-full w-full overflow-hidden rounded-[5px] bg-[#0a1628]">
+        <div className="absolute top-0.5 left-0.5 z-20">
+          <ElixirDrop cost={card.elixir} size={isDeck ? "sm" : "xs"} />
+        </div>
+
+        {onRemove && (
+          <span
+            role="button"
+            tabIndex={0}
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove();
+            }}
+            onKeyDown={(e) => e.key === "Enter" && onRemove()}
+            className="absolute top-0.5 right-0.5 z-30 flex h-5 w-5 items-center justify-center rounded-full bg-black/70 text-xs text-white"
+          >
+            ×
+          </span>
+        )}
+
+        <div className="absolute inset-0">
+          <Image
+            src={card.iconUrl}
+            alt={card.name}
+            fill
+            className="object-cover object-center scale-[1.08]"
+            sizes={isDeck ? "110px" : "80px"}
+            priority={isDeck && index < 4}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+        </div>
+
+        <div className="absolute right-0 bottom-0 left-0 z-20 px-1 pb-1">
+          <p
+            className={`text-center font-bold text-white drop-shadow-md ${
+              isDeck ? "text-[10px]" : "text-[8px]"
+            }`}
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            Level {level}
+          </p>
+          <div className="mt-0.5 h-1 overflow-hidden rounded-full bg-black/60 ring-1 ring-black/40">
+            <div
+              className={`h-full rounded-full ${ready ? "bg-cr-green" : "bg-cr-blue-bright"}`}
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
+          {isDeck && (
+            <p className="mt-0.5 text-center text-[7px] font-semibold text-white/70">
+              {progress}/{maxProgress}
+            </p>
+          )}
+        </div>
       </div>
     </button>
   );
