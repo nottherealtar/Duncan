@@ -87,12 +87,17 @@ export function PlayerProfileView({
         <p className="mt-1 text-sm text-cr-text-muted">
           Look up any player by tag. View trophies, stats, current deck, and recent battles.
         </p>
+        <p className="mt-2 rounded-lg border border-cr-blue/30 bg-cr-bg-deep/60 px-3 py-2 text-xs text-cr-text-muted">
+          Enter your <span className="font-bold text-white">player tag</span> (from your profile, e.g.{" "}
+          <span className="font-mono text-cr-blue-bright">#2L40G75306</span>) — not the temporary{" "}
+          <span className="font-bold text-white">API Token</span> from in-game Settings.
+        </p>
 
         <div className="mt-4 flex gap-2">
           <input
             value={tag}
             onChange={(e) => setTag(e.target.value)}
-            placeholder="#PLAYERTAG"
+            placeholder="#YOURPLAYERTAG"
             className="flex-1 rounded-xl border border-cr-blue/40 bg-cr-bg-deep px-4 py-2.5 font-mono text-sm uppercase text-white placeholder:text-cr-text-muted"
             onKeyDown={(e) => e.key === "Enter" && lookup()}
             aria-label="Player tag"
