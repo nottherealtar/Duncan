@@ -1,4 +1,4 @@
-const CACHE = "duncan-v5";
+const CACHE = "duncan-v6";
 const ASSETS = ["/icons/icon.svg"];
 
 self.addEventListener("install", (e) => {

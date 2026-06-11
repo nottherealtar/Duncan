@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-const SW_VERSION = "duncan-v5";
+const SW_VERSION = "duncan-v6";
 
 export function PWARegister() {
   useEffect(() => {
