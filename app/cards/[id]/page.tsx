@@ -18,6 +18,7 @@ const TYPE_LABELS: Record<string, string> = {
   troop: "Troop",
   spell: "Spell",
   building: "Building",
+  tower: "Tower Troop",
 };
 
 export default async function CardPage({ params }: CardPageProps) {
@@ -65,11 +66,18 @@ export default async function CardPage({ params }: CardPageProps) {
             </p>
 
             <dl className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <Stat label="Elixir" value={String(card.elixir)} accent="#ff44cc" />
+              {card.type !== "tower" && (
+                <Stat label="Elixir" value={String(card.elixir)} accent="#ff44cc" />
+              )}
               <Stat label="Rarity" value={card.rarity} accent={rarityColor(card.rarity)} />
               <Stat label="Type" value={TYPE_LABELS[card.type] ?? card.type} accent="#4a9eff" />
               <Stat label="Max Level" value={String(card.maxLevel)} accent="#f6c443" />
+              {card.hasEvolution && <Stat label="Evolution" value="Available" accent="#c44dff" />}
             </dl>
+
+            {card.description && (
+              <p className="mt-4 text-sm leading-relaxed text-cr-text-muted">{card.description}</p>
+            )}
           </div>
 
           <div className="cr-panel p-4 text-sm text-cr-text-muted">

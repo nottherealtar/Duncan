@@ -5,7 +5,12 @@ export interface Card {
   elixir: number;
   rarity: "Common" | "Rare" | "Epic" | "Legendary" | "Champion";
   iconUrl: string;
-  type: "troop" | "spell" | "building";
+  type: "troop" | "spell" | "building" | "tower";
+  description?: string;
+  hasEvolution?: boolean;
+  evolutionKey?: string;
+  deckEligible?: boolean;
+  arena?: number;
 }
 
 export interface DeckEntry {

@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import type { Card, DeckEntry } from "@/lib/types";
-import { CARDS, getCardsByIds, sortCards } from "@/lib/cards";
+import { DECK_BUILDER_CARDS, getCardsByIds, sortCards } from "@/lib/cards";
 import { parseShareCode, validateDeck } from "@/lib/deck-utils";
 import { DeckGrid } from "./DeckGrid";
 import { ShareCodeBar } from "./ShareCodeBar";
@@ -32,7 +32,7 @@ export function DeckBrowser({ decks, initialTab = "browser" }: DeckBrowserProps)
   );
 
   const collectionCards = useMemo(() => {
-    let cards = sortCards(CARDS, sortBy);
+    let cards = sortCards(DECK_BUILDER_CARDS, sortBy);
     if (filterRarity !== "all") {
       cards = cards.filter((c) => c.rarity === filterRarity);
     }

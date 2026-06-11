@@ -3,6 +3,9 @@ import type { Card } from "./types";
 
 export const CARDS: Card[] = cardsData.items as Card[];
 
+/** Cards that can appear in the 8-card battle deck builder */
+export const DECK_BUILDER_CARDS: Card[] = CARDS.filter((c) => c.deckEligible !== false);
+
 const cardById = new Map(CARDS.map((c) => [c.id, c]));
 const cardByName = new Map(CARDS.map((c) => [c.name.toLowerCase(), c]));
 
