@@ -2,7 +2,26 @@ import type { BattleLogEntry, PlayerProfile } from "./types";
 import { getCardByName } from "./cards";
 
 const API_BASE = process.env.CLASH_ROYALE_API_URL ?? "https://api.clashroyale.com/v1";
-const API_PROXY = process.env.CLASH_ROYALE_PROXY_URL;
+const ROYALEAPI_PROXY = "https://proxy.royaleapi.dev/v1";
+
+/** Vercel has no fixed IP — Supercell requires IP whitelist unless using RoyaleAPI proxy. */
+export function getClashApiBase(): string {
+  if (process.env.CLASH_ROYALE_PROXY_URL) {
+    return process.env.CLASH_ROYALE_PROXY_URL;
+  }
+  if (process.env.VERCEL === "1") {
+    return ROYALEAPI_PROXY;
+  }
+  return API_BASE;
+}
+
+export function getClashApiConfig() {
+  const token = Boolean(process.env.CLASH_ROYALE_API_TOKEN?.trim());
+  const base = getClashApiBase();
+  const usingProxy = base !== API_BASE;
+  const onVercel = process.env.VERCEL === "1";
+  return { token, usingProxy, onVercel, base };
+}
 
 function encodeTag(tag: string): string {
   const cleaned = tag.replace(/^#/, "").toUpperCase();
@@ -10,12 +29,12 @@ function encodeTag(tag: string): string {
 }
 
 async function clashFetch<T>(path: string): Promise<T> {
-  const token = process.env.CLASH_ROYALE_API_TOKEN;
+  const token = process.env.CLASH_ROYALE_API_TOKEN?.trim();
   if (!token) {
-    throw new Error("CLASH_ROYALE_API_TOKEN is not configured. Add your in-game API key to environment variables.");
+    throw new Error("CLASH_ROYALE_API_TOKEN is not configured. Add your developer API key from developer.clashroyale.com to Vercel environment variables.");
   }
 
-  const base = API_PROXY ?? API_BASE;
+  const base = getClashApiBase();
   const res = await fetch(`${base}${path}`, {
     headers: { Authorization: `Bearer ${token}` },
     next: { revalidate: 300 },

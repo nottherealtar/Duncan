@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { BattleLogEntry, PlayerProfile } from "@/lib/types";
 import { DeckGrid } from "@/components/decks/DeckGrid";
@@ -28,6 +28,16 @@ export function PlayerProfileView({
   const [player, setPlayer] = useState<PlayerProfile | null>(initialPlayer);
   const [battles, setBattles] = useState<BattleLogEntry[]>(initialBattles);
   const [copied, setCopied] = useState(false);
+  const [scoutStatus, setScoutStatus] = useState<string>("");
+
+  useEffect(() => {
+    fetch("/api/scout/status")
+      .then((r) => r.json())
+      .then((data: { ready?: boolean; hint?: string }) => {
+        if (!data.ready && data.hint) setScoutStatus(data.hint);
+      })
+      .catch(() => {});
+  }, []);
 
   const lookup = async () => {
     if (!tag.trim()) return;
@@ -88,10 +98,15 @@ export function PlayerProfileView({
           Look up any player by tag. View trophies, stats, current deck, and recent battles.
         </p>
         <p className="mt-2 rounded-lg border border-cr-blue/30 bg-cr-bg-deep/60 px-3 py-2 text-xs text-cr-text-muted">
-          Enter your <span className="font-bold text-white">player tag</span> (from your profile, e.g.{" "}
-          <span className="font-mono text-cr-blue-bright">#2L40G75306</span>) — not the temporary{" "}
-          <span className="font-bold text-white">API Token</span> from in-game Settings.
+          Enter your <span className="font-bold text-white">player tag</span> from your profile (Settings →
+          Player ID, with a <span className="font-mono">#</span> prefix). Do not paste the temporary API Token
+          from in-game Settings.
         </p>
+        {scoutStatus && (
+          <p className="mt-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
+            {scoutStatus}
+          </p>
+        )}
 
         <div className="mt-4 flex gap-2">
           <input
