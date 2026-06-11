@@ -1,59 +1,58 @@
-# Duncan - Python Discord Bot
+# Duncan — Clash Royale Companion PWA
 
-## Disclaimer
+A fan-made Progressive Web App for Clash Royale. Browse meta decks, build battle-ready compositions with an ingame-style deck viewer, and scout player stats via the official Supercell API.
 
-Slash commands can take some time to get registered globally, so if you want to test a command you should use
-the `@app_commands.guilds()` decorator so that it gets registered instantly. Example:
+**Not affiliated with Supercell.** Card images are served from the official Supercell API asset CDN (`api-assets.clashroyale.com`).
 
-```py
-@commands.hybrid_command(
-  name="command",
-  description="Command description",
-)
-@app_commands.guilds(discord.Object(id=GUILD_ID)) # Place your guild ID here
+## Three Layers
+
+| Layer | Route | Purpose |
+|-------|-------|---------|
+| **1 — Home** | `/` | Welcome, navigation cards, feature breakdown, site tree |
+| **2 — Deck Browser** | `/decks` | Meta deck pipeline, popular decks, deck builder, share codes |
+| **3 — API Hub** | `/api-hub` | Player lookup, battle log, deck sync via Supercell API |
+
+## Features
+
+- **Ingame-style deck viewer** — 2×4 card grid with elixir badges, level bars, and evolution borders
+- **Share codes** — One-tap links that open Clash Royale (`link.clashroyale.com`)
+- **Daily deck pipeline** — Cron job scans top player battle logs for new meta decks
+- **PWA** — Installable on mobile with offline shell caching
+- **Supercell API** — Player profiles, trophies, clan info, battle logs
+
+## Quick Start
+
+```bash
+npm install
+npm run dev
 ```
 
-## How to set up
+Open [http://localhost:3000](http://localhost:3000).
 
-To set up the bot I made it as simple as possible. I now created a [config.json](config.json) file where you can put the
-needed things to edit.
+## Environment Variables
 
-Here is an explanation of what everything is:
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `CLASH_ROYALE_API_TOKEN` | For live API | Token from [developer.clashroyale.com](https://developer.clashroyale.com) |
+| `CLASH_ROYALE_PROXY_URL` | Optional | e.g. `https://proxy.royaleapi.dev/v1` |
+| `CRON_SECRET` | Optional | Bearer token for cron endpoint security |
 
-| Variable                  | What it is                                                            |
-| ------------------------- | ----------------------------------------------------------------------|
-| YOUR_BOT_PREFIX_HERE      | The prefix you want to use for normal commands                        |
-| YOUR_BOT_TOKEN_HERE       | The token of your bot                                                 |
-| YOUR_BOT_PERMISSIONS_HERE | The permissions integer your bot needs when it gets invited           |
-| YOUR_APPLICATION_ID_HERE  | The application ID of your bot                                        |
-| OWNERS                    | The user ID of all the bot owners                                     |
+## Deployment (Vercel)
 
-## How to start
+Vercel is recommended for Next.js, PWA support, and daily cron jobs.
 
-To start the bot you simply need to launch, either your terminal (Linux, Mac & Windows), or your Command Prompt (
-Windows)
-.
+1. Push to GitHub and import in Vercel
+2. Add environment variables
+3. Deploy — cron runs daily at 06:00 UTC
 
-Before running the bot you will need to install all the requirements with this command:
-
-```
-python -m pip install -r requirements.txt
+```bash
+npm run build
 ```
 
-After that you can start it with
+## Card Data
 
-```
-python bot.py
-```
-
-
-> **Note** You may need to replace `python` with `py`, `python3`, `python3.11`, etc. depending on what Python versions you have installed on the machine.
-
-## Built With
-
-* [Python 3.9.12](https://www.python.org/)
+Card images and IDs come from the official Supercell API. Run `node scripts/build-cards.mjs` to rebuild `data/cards.json` from the raw API response.
 
 ## License
 
-This project is licensed under the: Apache License 2.0. 
-See the [LICENSE.md](LICENSE.md) file for more details.
+Apache License 2.0 — see [LICENSE.md](LICENSE.md).

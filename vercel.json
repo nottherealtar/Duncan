@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/refresh-decks",
+      "schedule": "0 6 * * *"
+    }
+  ]
+}
