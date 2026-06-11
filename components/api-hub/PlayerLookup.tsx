@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { BattleLogEntry, PlayerProfile } from "@/lib/types";
 import { DeckGrid } from "@/components/decks/DeckGrid";
 import { getCardByName, getCardsByIds } from "@/lib/cards";
-import { ShareCodeBar } from "@/components/decks/ShareCodeBar";
+import { buildDeckShareLink } from "@/lib/deck-utils";
 
 export function PlayerLookup() {
   const [tag, setTag] = useState("");
@@ -89,10 +89,16 @@ export function PlayerLookup() {
             </div>
           </div>
           {deckIds.length === 8 && (
-            <>
+            <div className="space-y-2">
               <DeckGrid cards={getCardsByIds(deckIds)} />
-              <ShareCodeBar cardIds={deckIds} />
-            </>
+              <button
+                type="button"
+                onClick={() => navigator.clipboard.writeText(buildDeckShareLink(deckIds))}
+                className="cr-filter-btn w-full py-2 text-sm"
+              >
+                Copy Deck Link
+              </button>
+            </div>
           )}
           {battles.length > 0 && (
             <div className="cr-deck-panel p-3">

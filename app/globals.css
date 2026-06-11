@@ -1,43 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  --color-cr-arena: #0c1a32;
-  --color-cr-arena-deep: #081222;
-  --color-cr-blue-top: #4db8ff;
-  --color-cr-blue-mid: #2a7fd4;
-  --color-cr-blue-bot: #1a5599;
-  --color-cr-blue-dark: #0f3a6e;
-  --color-cr-tab-off: #1a4a7a;
-  --color-cr-gold: #ffcc33;
-  --color-cr-gold-dark: #cc9900;
-  --color-cr-elixir: #e532d2;
-  --color-cr-green-gem: #33dd77;
-  --color-cr-pink: #ff66bb;
-  --color-cr-text: #ffffff;
   --font-display: var(--font-lilita), "Lilita One", system-ui, sans-serif;
 }
 
 @layer base {
   * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
   html { background: #040a14; }
-  body {
-    margin: 0;
-    background: var(--color-cr-arena-deep);
-    color: var(--color-cr-text);
-    font-family: system-ui, sans-serif;
-    overflow-x: hidden;
-  }
+  body { margin: 0; background: #0e2244; color: #fff; overflow-x: hidden; }
 }
 
-/* Ingame diamond tile background */
 .cr-tile-bg {
-  background-color: #0e2244;
+  background-color: #0c1e3a;
   background-image:
-    linear-gradient(135deg, rgba(45, 100, 170, 0.28) 25%, transparent 25%),
-    linear-gradient(225deg, rgba(45, 100, 170, 0.28) 25%, transparent 25%),
-    linear-gradient(45deg, rgba(45, 100, 170, 0.28) 25%, transparent 25%),
-    linear-gradient(315deg, rgba(45, 100, 170, 0.28) 25%, transparent 25%);
-  background-size: 16px 16px;
+    linear-gradient(135deg, rgba(38, 88, 148, 0.45) 25%, transparent 25%),
+    linear-gradient(225deg, rgba(38, 88, 148, 0.45) 25%, transparent 25%),
+    linear-gradient(45deg, rgba(38, 88, 148, 0.45) 25%, transparent 25%),
+    linear-gradient(315deg, rgba(38, 88, 148, 0.45) 25%, transparent 25%);
+  background-size: 14px 14px;
 }
 
 .cr-app {
@@ -48,104 +28,124 @@
 }
 
 @media (min-width: 480px) {
-  .cr-app {
-    max-width: 430px;
-    box-shadow: 0 0 60px rgba(0, 0, 0, 0.8);
-  }
+  .cr-app { max-width: 430px; box-shadow: 0 0 80px #000; }
 }
 
 .cr-display {
   font-family: var(--font-display);
-  text-shadow: 0 2px 0 #000, 0 3px 6px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 0 #000, 0 3px 6px rgba(0, 0, 0, 0.45);
 }
 
-/* Resource bars — exact ingame style */
+/* Resource bars */
 .cr-res-crown {
-  background: linear-gradient(180deg, #3d8fd4 0%, #2568a8 50%, #1a4f85 100%);
-  box-shadow: inset 0 2px 0 rgba(255,255,255,0.25), 0 3px 0 #0a2848;
+  background: linear-gradient(180deg, #4a9de8 0%, #2d78b8 45%, #1a5088 100%);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,0.28), 0 3px 0 #0a2848;
   border-radius: 10px;
 }
-
 .cr-res-gold {
   background: linear-gradient(180deg, #ffe566 0%, #f5c020 50%, #d4a010 100%);
   box-shadow: inset 0 2px 0 rgba(255,255,255,0.4), 0 3px 0 #8a6508;
   border-radius: 10px;
 }
-
 .cr-res-gem {
   background: linear-gradient(180deg, #55ee99 0%, #2ecc71 50%, #1fa855 100%);
   box-shadow: inset 0 2px 0 rgba(255,255,255,0.35), 0 3px 0 #0d6b38;
   border-radius: 10px;
 }
 
-/* Mega tabs: Decks | Collection */
+/* Mega tabs */
 .cr-mega-tab-on {
-  background: linear-gradient(180deg, #5ec4ff 0%, #3a9de8 35%, #2878c0 70%, #1a5a99 100%);
-  box-shadow: inset 0 3px 0 rgba(255,255,255,0.35), inset 0 -4px 0 rgba(0,0,0,0.2), 0 4px 0 #0a3058;
-  border-radius: 14px 14px 10px 10px;
+  background: linear-gradient(180deg, #6ed0ff 0%, #45aae8 30%, #2d88cc 65%, #1a5a99 100%);
+  box-shadow: inset 0 3px 0 rgba(255,255,255,0.4), inset 0 -4px 0 rgba(0,0,0,0.18), 0 4px 0 #0a3058;
+  border-radius: 16px 16px 12px 12px;
+  color: #fff;
 }
-
 .cr-mega-tab-off {
   background: linear-gradient(180deg, #2a6aaa 0%, #1a5088 50%, #123d6a 100%);
   box-shadow: inset 0 -3px 0 rgba(0,0,0,0.3), 0 3px 0 #081e38;
-  border-radius: 14px 14px 10px 10px;
-  opacity: 0.85;
+  border-radius: 16px 16px 12px 12px;
+  color: rgba(255,255,255,0.7);
 }
 
-/* Deck slot buttons */
+/* Deck toolbar strip */
+.cr-deck-toolbar {
+  background: linear-gradient(180deg, #1e5a96 0%, #123d6a 100%);
+  border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 2px 0 #081e38;
+  padding: 5px 6px;
+}
+
 .cr-slot-on {
-  background: #fff;
+  background: linear-gradient(180deg, #ffffff 0%, #e8eef8 100%);
   color: #1a3050;
   border: 3px solid #ffcc33;
-  box-shadow: 0 2px 0 #8a6508;
+  box-shadow: 0 2px 0 #8a6508, inset 0 1px 0 rgba(255,255,255,0.8);
   border-radius: 8px;
 }
-
 .cr-slot-off {
-  background: linear-gradient(180deg, #3a7fc0, #1a5088);
-  color: #aaccee;
-  box-shadow: inset 0 -2px 0 rgba(0,0,0,0.3), 0 2px 0 #0a2848;
+  background: linear-gradient(180deg, #4a9de8, #1a5088);
+  color: #cce5ff;
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
   border-radius: 8px;
 }
 
-/* OK button */
-.cr-btn-ok {
-  background: linear-gradient(180deg, #5ec4ff 0%, #3a9de8 30%, #2878c0 70%, #1a5a99 100%);
-  box-shadow: inset 0 3px 0 rgba(255,255,255,0.3), 0 5px 0 #0a3058, 0 8px 16px rgba(0,0,0,0.4);
-  border-radius: 14px;
-  border: none;
-  color: white;
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  text-shadow: 0 2px 0 #000;
-  padding: 14px;
-  width: 100%;
-}
-
-.cr-btn-ok:active {
-  transform: translateY(3px);
-  box-shadow: inset 0 2px 0 rgba(255,255,255,0.3), 0 2px 0 #0a3058;
-}
-
-/* Filter pills */
 .cr-filter-btn {
-  background: linear-gradient(180deg, #3a9de8, #1a5a99);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), 0 3px 0 #0a3058;
+  background: linear-gradient(180deg, #45aae8, #1a5a99);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 3px 0 #0a3058;
   border-radius: 10px;
-  color: white;
+  color: #fff;
   font-family: var(--font-display);
   text-shadow: 0 1px 0 #000;
+  border: none;
+}
+.cr-filter-btn:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 1px 0 #0a3058;
+}
+
+/* OK — white ingame style */
+.cr-btn-ok {
+  background: linear-gradient(180deg, #ffffff 0%, #e8eef8 100%);
+  border: 3px solid #2878c0;
+  border-radius: 14px;
+  color: #1a3050;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  text-shadow: none;
+  padding: 11px 0;
+  width: 58%;
+  max-width: 220px;
+  box-shadow: 0 4px 0 #0a3058, 0 6px 12px rgba(0,0,0,0.35);
+}
+.cr-btn-ok:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #0a3058;
 }
 
 .cr-deck-panel {
-  background: linear-gradient(180deg, rgba(18,45,82,0.95) 0%, rgba(10,28,52,0.98) 100%);
-  border-radius: 12px;
-  padding: 6px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 12px rgba(0,0,0,0.35);
+  background: linear-gradient(180deg, rgba(16,42,78,0.96) 0%, rgba(8,24,48,0.98) 100%);
+  border-radius: 10px;
+  padding: 4px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 12px rgba(0,0,0,0.4);
 }
 
 .safe-top { padding-top: max(4px, env(safe-area-inset-top)); }
 .safe-bottom { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
-
 .scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* Card frames */
+.cr-card-frame-common { background: linear-gradient(160deg, #8a9db5 0%, #5a6f88 40%, #3a4d62 100%); }
+.cr-card-frame-rare { background: linear-gradient(160deg, #ffc04d 0%, #e8871a 40%, #a85e08 100%); }
+.cr-card-frame-epic { background: linear-gradient(160deg, #e07aff 0%, #a84fe0 40%, #5e2080 100%); }
+.cr-card-frame-legendary { background: linear-gradient(160deg, #fff0a0 0%, #ffd34d 25%, #ff8c42 55%, #c44dff 100%); }
+.cr-card-frame-champion { background: linear-gradient(160deg, #7afff5 0%, #2ee8d0 40%, #0a9e8c 100%); }
+
+.cr-evolve-ring {
+  box-shadow: 0 0 0 2px #ff4fd8, 0 0 16px rgba(255, 79, 216, 0.85), inset 0 0 8px rgba(255, 79, 216, 0.35);
+}
+.cr-champion-ring {
+  box-shadow: 0 0 0 2px #ffcc33, 0 0 14px rgba(255, 204, 51, 0.7);
+}

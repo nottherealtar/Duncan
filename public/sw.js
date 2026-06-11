@@ -1,37 +1,26 @@
-const CACHE_NAME = "duncan-v3";
-const PRECACHE = ["/decks", "/icons/icon.svg"];
+const CACHE = "duncan-v5";
+const ASSETS = ["/icons/icon.svg"];
 
-self.addEventListener("install", (event) => {
+self.addEventListener("install", (e) => {
   self.skipWaiting();
-  event.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(PRECACHE)));
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));
 });
 
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
+self.addEventListener("activate", (e) => {
+  e.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
 
-self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return;
-  const url = new URL(event.request.url);
-
-  if (url.pathname.startsWith("/api/") || event.request.mode === "navigate") {
-    event.respondWith(fetch(event.request));
+self.addEventListener("fetch", (e) => {
+  if (e.request.method !== "GET") return;
+  if (e.request.mode === "navigate" || e.request.url.includes("/api/")) {
+    e.respondWith(fetch(e.request));
     return;
   }
-
-  event.respondWith(
-    fetch(event.request)
-      .then((res) => {
-        if (res.ok) {
-          const clone = res.clone();
-          caches.open(CACHE_NAME).then((c) => c.put(event.request, clone));
-        }
-        return res;
-      })
-      .catch(() => caches.match(event.request))
+  e.respondWith(
+    fetch(e.request).catch(() => caches.match(e.request))
   );
 });
